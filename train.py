@@ -25,8 +25,9 @@ import time
 from model.seq2seq import Seq2Seq
 from model.seq2seq2 import Seq2Seq2
 from model.transformer.transformer import Transformer
-from func.utils import Word2Id,BatchMaker,make_vec,make_vec_c,to_var,logger,get_args,data_loader,loss_calc,predict_calc
+from func.utils import Word2Id,BatchMaker,make_vec,make_vec_c,to_var,logger,data_loader,loss_calc,predict_calc
 from func import constants
+from func.parser import get_args
 import nltk
 import datetime
 import os
@@ -83,7 +84,8 @@ def model_handler(args,data,train=True,data_kind="train"):
 
         #テストデータにおいて、predict_rateが上回った時のみモデルを保存
         if data_kind=="test" and args.high_score<predict_rate:
-            old_path="model_data/{}_predict_rate_{}_epoch_{}_model.pth".format(args.start_time,args.high_score,args.high_epoch)
+            old_path="model_data/{}_predict_rate_{}_epoch_{}_model.pth"\
+                    .format(args.start_time,round(args.high_score,3),args.high_epoch)
             if os.path.exists(old_path):
                 os.remove(old_path)
             args.high_score=predict_rate

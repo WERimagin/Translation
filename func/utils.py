@@ -8,7 +8,6 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from func import constants
 import datetime
-import argparse
 import json
 import platform
 
@@ -104,44 +103,6 @@ def logger(args,text):
     if args.system=="Linux":
         with open("log.txt","a")as f:
             f.write("{}\t{}\n".format(str(datetime.datetime.today()).replace(" ","-"),text))
-
-def get_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--start_epoch", type=int, default="0", help="input model epoch")
-    parser.add_argument("--cuda_number", type=int, default="0", help="specify cuda number")
-    parser.add_argument("--train_batch_size", type=int, default="32", help="input train batch size")
-    parser.add_argument("--test_batch_size", type=int, default="64", help="input test batch size")
-
-    ##データのオプション
-    parser.add_argument("--src_length", type=int, default="30", help="input train batch size")
-    parser.add_argument("--tgt_length", type=int, default="30", help="input test batch size")
-    parser.add_argument("--model_version", type=int, default="1", help="input test batch size")
-    parser.add_argument("--use_interro", type=bool, default=True, help="input test batch size")
-    parser.add_argument("--data_rate", type=float, default="1", help="input epoch number")
-
-    #model_hyper_parameter
-    parser.add_argument("--embed_size", type=int, default="300", help="input rnn hidden size")
-    parser.add_argument("--hidden_size", type=int, default="600", help="input rnn hidden size")
-    parser.add_argument("--epoch_num", type=int, default="200", help="input epoch number")
-    parser.add_argument("--dropout", type=float, default="0.3", help="input epoch number")
-    parser.add_argument("--layer_size", type=int, default="2", help="input epoch number")
-    parser.add_argument("--vocab_size", type=int, default="10000", help="input epoch number")
-    parser.add_argument("--lr", type=float, default="0.001", help="input epoch number")
-    parser.add_argument("--teacher_rate", type=float, default="0.5", help="input epoch number")
-
-    #そのたのパラメーター
-    parser.add_argument("--print_iter", type=int, default="50", help="input epoch number")
-    parser.add_argument("--not_train", type=bool, default=False, help="input epoch number")
-    parser.add_argument("--use_train_data", type=bool, default=False, help="input epoch number")
-    parser.add_argument("--model_name", type=str, default="", help="input epoch number")
-    parser.add_argument("--include_pad", type=bool, default=False, help="input epoch number")
-    args = parser.parse_args()
-    args.start_time=str(datetime.datetime.today()).replace(" ","-")
-    args.high_epoch=0
-    args.high_score=0
-    args.system=platform.system()
-
-    return args
 
 #ファイルから文、質問文、word2idなどを読み込み、辞書形式で返す
 def data_loader(args,path,first=True):

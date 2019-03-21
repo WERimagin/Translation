@@ -26,8 +26,9 @@ import time
 from model.seq2seq import Seq2Seq
 from model.seq2seq2 import Seq2Seq2
 from model.transformer.transformer import Transformer
-from func.utils import Word2Id,BatchMaker,make_vec,make_vec_c,to_var,logger,get_args,data_loader,loss_calc,predict_calc,predict_sentence
+from func.utils import Word2Id,BatchMaker,make_vec,make_vec_c,to_var,logger,data_loader,loss_calc,predict_calc,predict_sentence
 from func import constants
+from func.parser import get_args
 import nltk
 
 
