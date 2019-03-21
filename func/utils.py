@@ -221,7 +221,7 @@ def predict_calc(predict,target):
         return predict_sum
 
 #idからid2wordを使ってwordに戻して返す
-def predict_sentence(predict,target,id2word):
+def predict_sentence(args,predict,target,id2word):
     #predict:(batch,seq_len)
     #target:(batch,seq_len)
     predict=torch.argmax(predict,dim=-1).tolist()#(batch,seq_len)
@@ -229,7 +229,7 @@ def predict_sentence(predict,target,id2word):
     predict_list=[]
     #batchの中の一つずつ
     predict_list=[" ".join([id2word[w] for w in sentence[0:index_remake(sentence,constants.EOS)]]) \
-                    for sentence in predict] if args.include_pad==True else
+                    for sentence in predict] if args.include_pad==True else \
                 [" ".join([id2word[w] for w in sentence[0:index_remake(sentence,constants.EOS)]])\
                     for sentence in predict]
     #predict_list=[" ".join([id2word[w] for w in sentence[0:index_ramake(sentence,constants.EOS)]])\
