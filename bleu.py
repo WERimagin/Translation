@@ -53,7 +53,7 @@ with open(path,"r")as f:
     predicts=t["predicts"]
 
 
-for i in range(0,len(src),10):
+for i in range(0,100):
     print(src[i])
     print(targets[i])
     print(predicts[i])
