@@ -134,6 +134,7 @@ def get_args():
     parser.add_argument("--not_train", type=bool, default=False, help="input epoch number")
     parser.add_argument("--use_train_data", type=bool, default=False, help="input epoch number")
     parser.add_argument("--model_name", type=str, default="", help="input epoch number")
+    parser.add_argument("--include_pad", type=bool, default=False, help="input epoch number")
     args = parser.parse_args()
     args.start_time=str(datetime.datetime.today()).replace(" ","-")
     args.high_epoch=0
@@ -227,8 +228,10 @@ def predict_sentence(predict,target,id2word):
     #EOSの前まで
     predict_list=[]
     #batchの中の一つずつ
-    predict_list=[" ".join([id2word[w] for w in sentence[0:index_remake(sentence,constants.EOS)]])\
-                                        for sentence in predict]
+    predict_list=[" ".join([id2word[w] for w in sentence[0:index_remake(sentence,constants.EOS)]]) \
+                    for sentence in predict] if args.include_pad==True else
+                [" ".join([id2word[w] for w in sentence[0:index_remake(sentence,constants.EOS)]])\
+                    for sentence in predict]
     #predict_list=[" ".join([id2word[w] for w in sentence[0:index_ramake(sentence,constants.EOS)]])\
     #                                    for sentence in predict]
     return predict_list
