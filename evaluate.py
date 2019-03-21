@@ -61,8 +61,8 @@ def model_handler(args,data,train=True):
     targets=[" ".join([t_id2word[id] for id in sentence[1:-1]]) for sentence in targets]#idから単語へ戻す
 
     with open("data/predict_sentences.json","w")as f:
-        data={"sources":sentences,
-                "targets":questions,
+        data={"sources":sources,
+                "targets":targets,
                 "predicts":predicts}
         json.dump(data,f)
 
