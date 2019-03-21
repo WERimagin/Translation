@@ -64,5 +64,4 @@ class Transformer(nn.Module):
 
         encoder_output=self.encoder(input_word)#(batch,seq_len,hidden_size)
         output=self.decoder(output_word,encoder_output)
-        print(output.size())
         return output
