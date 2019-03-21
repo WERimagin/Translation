@@ -45,9 +45,11 @@ def tokenize(sent):
 def vec_process(source_word,target_word):
 
     vec_size=300
+    source_word=sorted(source_word.items(),key=lambda x:-x[1])
+    target_word=sorted(target_word.items(),key=lambda x:-x[1])
 
-    s_word2id={w:i for i,(w,count) in enumerate(source_word.items(),6) if count>=0}
-    t_word2id={w:i for i,(w,count) in enumerate(target_word.items(),6) if count>=0}
+    s_word2id={w:i for i,(w,count) in enumerate(source_word,6) if count>=0}
+    t_word2id={w:i for i,(w,count) in enumerate(target_word,6) if count>=0}
     s_word2id["<PAD>"]=0
     s_word2id["<UNK>"]=1
     s_word2id["<SOS>"]=2
@@ -83,7 +85,7 @@ def data_process(input_path,output_path,train=False):
     source_word=collections.defaultdict(int)
     target_word=collections.defaultdict(int)
 
-    for line in tqdm(data):
+    for line in tqdm(data[0:]):
         line=line.lower()
         line=line.split("\t")
         s=tokenize(line[1])
