@@ -70,8 +70,10 @@ def model_handler(args,data,train=True):
 args=get_args()
 train_data,test_data=data_loader(args,"data/processed_data.json",first=True)
 test_data=test_data if args.use_train_data==False else train_data
+
 model=Seq2Seq(args) if args.model_version==1 else \
-        Seq2Seq2(args)
+        Seq2Seq2(args) if args.model_version==2 else \
+        Transformer(args)
 
 
 
