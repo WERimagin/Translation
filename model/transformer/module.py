@@ -77,7 +77,9 @@ class EncoderLayer(nn.Module):
         output=torch.add(input,output)
         output=F.relu(output)
 
-        output=self.ff2(F.relu(self.ff1(output)))
+        output2=self.ff2(F.relu(self.ff1(output)))
+        output2=torch.add(output,output2)
+        output2=F.relu(output2)
 
         return output
 
@@ -94,10 +96,15 @@ class DecoderLayer(nn.Module):
     def forward(self,input,encoder_output):
 
         output=self.self_attention(input,input,input)#(batch,seq_len,dim)
-        output=self.encdec_attention(encoder_output,output,encoder_output)#(batch,seq_len,dim)
-        output=torch.add(input,output)#(batch_seq_len,dim)
+        output=torch.add(input,output)
         output=F.relu(output)
 
-        output=self.ff2(F.relu(self.ff1(output)))
+        output=self.encdec_attention(encoder_output,output,encoder_output)#(batch,seq_len,dim)
+        output2=torch.add(output,output2)
+        output2=F.relu(output2)
+
+        output2=self.ff2(F.relu(self.ff1(output2)))
+        output3=torch.add(output2,output3)
+        output3=F.relu(output3)
 
         return output
