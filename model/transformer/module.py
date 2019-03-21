@@ -99,11 +99,11 @@ class DecoderLayer(nn.Module):
         output=torch.add(input,output)
         output=F.relu(output)
 
-        output=self.encdec_attention(encoder_output,output,encoder_output)#(batch,seq_len,dim)
+        output2=self.encdec_attention(encoder_output,output,encoder_output)#(batch,seq_len,dim)
         output2=torch.add(output,output2)
         output2=F.relu(output2)
 
-        output2=self.ff2(F.relu(self.ff1(output2)))
+        output3=self.ff2(F.relu(self.ff1(output2)))
         output3=torch.add(output2,output3)
         output3=F.relu(output3)
 
