@@ -195,6 +195,7 @@ def loss_calc(predict,target):
     #batchとseq_lenを掛けて一次元にしてentropyを計算
     predict=predict.contiguous().view(batch*seq_len,-1)#(batch*seq_len,vocab_size)
     target=target.contiguous().view(-1)#(batch*seq_len)
+    print(predict.size(),target.size())
     loss=criterion(predict,target)
     return loss
 
