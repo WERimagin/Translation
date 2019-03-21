@@ -229,8 +229,8 @@ def predict_sentence(args,predict,target,id2word):
     predict_list=[]
     #batchの中の一つずつ
     predict_list=[" ".join([id2word[w] for w in sentence[0:index_remake(sentence,constants.EOS)]]) \
-                    for sentence in predict] if args.include_pad==True else \
-                [" ".join([id2word[w] for w in sentence[0:index_remake(sentence,constants.EOS)]])\
+                    for sentence in predict] if args.include_pad==False else \
+                [" ".join([id2word[w] for w in sentence])\
                     for sentence in predict]
     #predict_list=[" ".join([id2word[w] for w in sentence[0:index_ramake(sentence,constants.EOS)]])\
     #                                    for sentence in predict]
