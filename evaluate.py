@@ -33,11 +33,11 @@ import nltk
 #epochあたりの学習
 def model_handler(args,data,train=True):
     start=time.time()
-    sentences=data["sentences"]
-    questions=data["questions"]
-    id2word=data["id2word"]
-    data_size=len(questions)
-
+    sources=data["sources"]
+    targets=data["targets"]
+    s_id2word=data["s_id2word"]
+    t_id2word=data["t_id2word"]
+    data_size=len(sources)
 
     batch_size=args.test_batch_size
     model.eval()
@@ -50,15 +50,15 @@ def model_handler(args,data,train=True):
     predicts=[]
     for i_batch,batch in tqdm(enumerate(batches)):
         #これからそれぞれを取り出し処理してモデルへ
-        input_words=make_vec([sentences[i] for i in batch])
-        output_words=make_vec([questions[i] for i in batch])#(batch,seq_len)
+        input_words=make_vec([sources[i] for i in batch])
+        output_words=make_vec([targets[i] for i in batch])#(batch,seq_len)
         #modelにデータを渡してpredictする
         predict=model(input_words,output_words,train)#(batch,seq_len,vocab_size)
-        predict=predict_sentence(predict,output_words[:,1:],id2word)#(batch,seq_len)
+        predict=predict_sentence(predict,output_words[:,1:],t_id2word)#(batch,seq_len)
         predicts.extend(predict)
 
-    sentences=[" ".join([id2word[id] for id in sentence]) for sentence in sentences]#idから単語へ戻す
-    questions=[" ".join([id2word[id] for id in sentence[1:-1]]) for sentence in questions]#idから単語へ戻す
+    sources=[" ".join([s_id2word[id] for id in sentence]) for sentence in sources]#idから単語へ戻す
+    questions=[" ".join([t_id2word[id] for id in sentence[1:-1]]) for sentence in targets]#idから単語へ戻す
 
     with open("data/predict_sentences.json","w")as f:
         data={"sentences":sentences,
@@ -68,8 +68,8 @@ def model_handler(args,data,train=True):
 
 ##start main
 args=get_args()
-test_data=data_loader(args,"data/test_data.json",first=True) if args.use_train_data==False else \
-            data_loader(args,"data/train_data.json",first=True)
+train_data,test_data=data_loader(args,"data/processed_data.json",first=True)
+test_data=test_data if args.use_train_data==False else train_data
 model=Seq2Seq(args) if args.model_version==1 else \
         Seq2Seq2(args)
 

@@ -125,7 +125,7 @@ def get_args():
     parser.add_argument("--epoch_num", type=int, default="200", help="input epoch number")
     parser.add_argument("--dropout", type=float, default="0.3", help="input epoch number")
     parser.add_argument("--layer_size", type=int, default="2", help="input epoch number")
-    parser.add_argument("--vocab_size", type=int, default="50000", help="input epoch number")
+    parser.add_argument("--vocab_size", type=int, default="10000", help="input epoch number")
     parser.add_argument("--lr", type=float, default="0.001", help="input epoch number")
     parser.add_argument("--teacher_rate", type=float, default="0.5", help="input epoch number")
 
@@ -174,10 +174,12 @@ def data_loader(args,path,first=True):
 
     train_data={"sources":train_sources,
         "targets":train_targets,
+        "s_id2word":s_id2word,
         "t_id2word":t_id2word}
 
     test_data={"sources":test_sources,
         "targets":test_targets,
+        "s_id2word":s_id2word,
         "t_id2word":t_id2word}
 
     logger(args,"data_size:{}".format(data_size))
