@@ -1,4 +1,4 @@
-from __future__ import unicode_literals, print_function, division
+log(from __future__ import unicode_literals, print_function, division
 from io import open
 import unicodedata
 import string
@@ -26,6 +26,7 @@ SOS_token = 0
 EOS_token = 1
 
 def log(text):
+    print(text)
     with open("log.txt","a")as f:
         f.write(text+"\n")
 
@@ -69,7 +70,7 @@ def normalizeString(s):
     return s
 
 def readLangs(lang1, lang2, reverse=False):
-    print("Reading lines...")
+    log("Reading lines...")
 
     # Read the file and split into lines
     lines = open('data/%s-%s.txt' % (lang1, lang2), encoding='utf-8').\
@@ -90,7 +91,7 @@ def readLangs(lang1, lang2, reverse=False):
     return input_lang, output_lang, pairs
 
 def readLangs(lang1, lang2, reverse=False):
-    print("Reading lines...")
+    log("Reading lines...")
 
     # Read the file and split into lines
     lines = open('data/%s-%s.txt' % (lang1, lang2), encoding='utf-8').\
@@ -133,16 +134,16 @@ def filterPairs(pairs):
 
 def prepareData(lang1, lang2, reverse=False):
     input_lang, output_lang, pairs = readLangs(lang1, lang2, reverse)
-    print("Read %s sentence pairs" % len(pairs))
+    log("Read %s sentence pairs" % len(pairs))
     pairs = filterPairs(pairs)
-    print("Trimmed to %s sentence pairs" % len(pairs))
-    print("Counting words...")
+    log("Trimmed to %s sentence pairs" % len(pairs))
+    log("Counting words...")
     for pair in pairs:
         input_lang.addSentence(pair[0])
         output_lang.addSentence(pair[1])
-    print("Counted words:")
-    print(input_lang.name, input_lang.n_words)
-    print(output_lang.name, output_lang.n_words)
+    log("Counted words:")
+    log(input_lang.name, input_lang.n_words)
+    log(output_lang.name, output_lang.n_words)
     return input_lang, output_lang, pairs
 
 
@@ -330,7 +331,7 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
         if iter % print_every == 0:
             print_loss_avg = print_loss_total / print_every
             print_loss_total = 0
-            print('%s (%d %d%%) %.4f' % (timeSince(start, iter / n_iters),
+            log('%s (%d %d%%) %.4f' % (timeSince(start, iter / n_iters),
                                          iter, iter / n_iters * 100, print_loss_avg))
 
         if iter % plot_every == 0:
@@ -390,15 +391,15 @@ def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
 def evaluateRandomly(encoder, decoder, n=10):
     for i in range(n):
         pair = random.choice(pairs)
-        print('>', pair[0])
-        print('=', pair[1])
+        log('>', pair[0])
+        log('=', pair[1])
         output_words, attentions = evaluate(encoder, decoder, pair[0])
         output_sentence = ' '.join(output_words)
-        print('<', output_sentence)
-        print('')
+        log('<', output_sentence)
+        log('')
 
 input_lang, output_lang, pairs = prepareData('eng', 'fra', True)
-print(random.choice(pairs))
+log(random.choice(pairs))
 
 hidden_size = 256
 encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
