@@ -52,8 +52,8 @@ def model_handler(args,data,train=True):
     predicts=[]
     for i_batch,batch in tqdm(enumerate(batches)):
         #これからそれぞれを取り出し処理してモデルへ
-        input_words=make_vec([sources[i] for i in batch])
-        output_words=make_vec([targets[i] for i in batch])#(batch,seq_len)
+        input_words=make_vec(args,[sources[i] for i in batch])
+        output_words=make_vec(args,[targets[i] for i in batch])#(batch,seq_len)
         #modelにデータを渡してpredictする
         predict=model(input_words,output_words,train)#(batch,seq_len,vocab_size)
         predict=predict_sentence(args,predict,output_words[:,1:],t_id2word)#(batch,seq_len)
@@ -73,11 +73,14 @@ args=get_args()
 train_data,test_data=data_loader(args,"data/processed_data.json",first=True)
 test_data=test_data if args.use_train_data==False else train_data
 
+device_kind="cuda:{}".format(args.cuda_number) if torch.cuda.is_available() else "cpu"
+args.device=torch.device(device_kind)
+
 model=Seq2Seq(args) if args.model_version==1 else \
         Seq2Seq2(args) if args.model_version==2 else \
         Transformer(args)
 
-
+model.to(args.device)
 
 if args.model_name!="":
     param = torch.load("model_data/{}".format(args.model_name))
