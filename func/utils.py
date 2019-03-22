@@ -138,7 +138,7 @@ def data_loader(args,path,first=True):
     targets_id=[[t_word2id[w] if w in t_word2id else t_word2id["<UNK>"] for w in sent.split()] for sent in targets_rm]
     targets_id=[[t_word2id["<SOS>"]] + sent + [t_word2id["<EOS>"]] for sent in targets_id]
 
-    train_data_size=int(len(sources_id*0.9))
+    train_data_size=int(len(sources_i)*0.9)
 
     train_sources=sources_id[0:train_data_size]
     train_targets=targets_id[0:train_data_size]
