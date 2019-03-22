@@ -17,6 +17,7 @@ class Decoder(nn.Module):
         self.layer_size=args.layer_size
         self.batch_size=0
         self.hidden=0
+        self.device=args.device
 
         #self.word_embed=nn.Embedding(self.vocab_size, self.embed_size,padding_idx=constants.PAD)
         self.word_embed=nn.Embedding(self.vocab_size, self.embed_size)
@@ -90,27 +91,15 @@ class Decoder(nn.Module):
         teacher_forcing_ratio=1
 
         #decoderからの出力結果
-        outputs=to_var(torch.from_numpy(np.zeros((output_seq_len,batch_size,self.vocab_size))))
-        predict=to_var(torch.from_numpy(np.array([constants.SOS]*batch_size,dtype="long")))#(batch_size)
+        outputs=torch.from_numpy(np.zeros((output_seq_len,batch_size,self.vocab_size))).to(self.device)
+        predict=torch.from_numpy(np.array([constants.SOS]*batch_size,dtype="long")).to(self.device) #(batch_size)
+
         for i in range(output_maxlen):
             #使用する入力。
             current_input=source[:,i] if random.random()<teacher_forcing_ratio else predict.view(-1)#(batch)
             output,predict=self.decode_step(current_input,encoder_output)#(batch,vocab_size),(batch)
             outputs[i]=output#outputsにdecoderの各ステップから出力されたベクトルを入力
 
-        """
-        #教師無しの学習:predictをcurrent_inputに投げている
-        else:
-            output_maxlen=20
-            #decoderからの出力結果
-            outputs=to_var(torch.from_numpy(np.zeros((output_maxlen,batch_size,self.vocab_size))))
-            #decoderに渡す最初の<SOS>ベクトル
-            current_input=to_var(torch.from_numpy(np.array([constants.SOS]*batch_size,dtype="long")))#(batch_size)
-            for i in range(output_maxlen):
-                output,predict=self.decode_step(current_input,encoder_output)#(batch,vocab_size),(batch)
-                current_input=predict.view(-1,1)#(batch,1)
-                outputs[i]=output#outputsにdecoderの各ステップから出力されたベクトルを入力
-        """
         outputs=torch.transpose(outputs,0,1)#(batch,seq_len,vocab_size)
         return outputs
 

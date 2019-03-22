@@ -70,7 +70,7 @@ class BatchMaker:
             batches.append(batch)
         return batches
 
-def to_var(x):
+def to_var(args,x):
     if torch.cuda.is_available():
         x = x.cuda()
     return Variable(x)
@@ -80,12 +80,12 @@ def make_tensor(id_number):
     return to_var(torch.from_numpy(np.array(id_number,dtype="long")))
 
 #渡されたデータをpytorchのためにto_varで変換する
-def make_vec(sentences):
+def make_vec(args,sentences):
     maxsize=max([len(sentence) for sentence in sentences])
     sentences_cp=[]
     for sentence in sentences:
         sentences_cp.append(sentence+[constants.PAD]*(maxsize-len(sentence)))
-    return to_var(torch.from_numpy(np.array(sentences_cp,dtype="long")))
+    return torch.from_numpy(np.array(sentences_cp,dtype="long")).to(args.device)
 
 def make_vec_c(sentences):
     sent_maxsize=max([len(sentence) for sentence in sentences])

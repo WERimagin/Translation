@@ -25,6 +25,8 @@ import time
 from model.seq2seq import Seq2Seq
 from model.seq2seq2 import Seq2Seq2
 from model.transformer.transformer import Transformer
+from model.seq2seq4 import Seq2Seq4
+
 from func.utils import Word2Id,BatchMaker,make_vec,make_vec_c,to_var,logger,data_loader,loss_calc,predict_calc
 from func import constants
 from func.parser import get_args
@@ -55,8 +57,8 @@ def model_handler(args,data,train=True,data_kind="train"):
     loss_sum=0
     for i_batch,batch in enumerate(batches):
         #これからそれぞれを取り出し処理してモデルへ
-        input_words=make_vec([sources[i] for i in batch])
-        output_words=make_vec([targets[i] for i in batch])#(batch,seq_len)
+        input_words=make_vec(args,[sources[i] for i in batch])
+        output_words=make_vec(args,[targets[i] for i in batch])#(batch,seq_len)
         if train:
             optimizer.zero_grad()
         #modelにデータを渡してpredictする
@@ -97,9 +99,14 @@ def model_handler(args,data,train=True,data_kind="train"):
 args=get_args()
 train_data,test_data=data_loader(args,"data/processed_data.json",first=True)
 
+device_kind="cuda:{}".format(args.cuda_number) if torch.cuda.is_available() else "cpu"
+args.device=torch.device(device_kind)
+
 model=Seq2Seq(args) if args.model_version==1 else \
         Seq2Seq2(args) if args.model_version==2 else \
-        Transformer(args)
+        Transformer(args) if args.model_version==3 else \
+        Seq2Seq4(args)
+model.to(args.device)
 
 #start_epochが0なら最初から、指定されていたら学習済みのものをロードする
 if args.start_epoch>=1:
@@ -108,10 +115,7 @@ if args.start_epoch>=1:
 else:
     args.start_epoch=0
 
-#pytorch0.4より、OpenNMT参考
-device_kind="cuda:{}".format(args.cuda_number) if torch.cuda.is_available() else "cpu"
-device=torch.device(device_kind)
-model.to(device)
+
 optimizer = optim.Adam(model.parameters(),lr=args.lr)
 
 logger(args,"use {}".format(device_kind))
