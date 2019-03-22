@@ -67,44 +67,56 @@ class EncoderLayer(nn.Module):
         super(EncoderLayer,self).__init__()
 
         self.hidden_size=args.hidden_size
+
         self.self_attention=MultiHeadAttention(args)
         self.ff1=nn.Linear(self.hidden_size,self.hidden_size)
         self.ff2=nn.Linear(self.hidden_size,self.hidden_size)
+        self.norm=nn.LayerNorm(self.hidden_size)
 
     #input:(batch,seq_len,dim)
     def forward(self,input):
+        #MultiHead
+        residual=input
         output=self.self_attention(input,input,input)#(batch,seq_len,dim)
-        output=torch.add(input,output)
-        output=F.relu(output)
+        output=torch.add(output,residual)
+        output=self.norm(output)
 
-        output2=self.ff2(F.relu(self.ff1(output)))
-        output2=torch.add(output,output2)
-        output2=F.relu(output2)
+        ##FF
+        residual=output
+        output=self.ff2(F.relu(self.ff1(output)))
+        output=torch.add(output,residual)
+        output=self.norm(output)
 
         return output
 
 class DecoderLayer(nn.Module):
     def __init__(self,args):
         super(DecoderLayer,self).__init__()
+        
         self.hidden_size=args.hidden_size
+
         self.self_attention=MultiHeadAttention(args)
         self.encdec_attention=MultiHeadAttention(args)
         self.ff1=nn.Linear(self.hidden_size,self.hidden_size)
         self.ff2=nn.Linear(self.hidden_size,self.hidden_size)
+        self.norm=nn.LayerNorm(self.hidden_size)
 
     #input:(batch,seq_len,dim)
     def forward(self,input,encoder_output):
 
+        residual=input
         output=self.self_attention(input,input,input)#(batch,seq_len,dim)
-        output=torch.add(input,output)
-        output=F.relu(output)
+        output=torch.add(output,residual)
+        output=self.norm(output)
 
-        output2=self.encdec_attention(encoder_output,output,encoder_output)#(batch,seq_len,dim)
-        output2=torch.add(output,output2)
-        output2=F.relu(output2)
+        residual=output
+        output=self.encdec_attention(encoder_output,output,encoder_output)#(batch,seq_len,dim)
+        output=torch.add(output,residual)
+        output=self.norm(output)
 
-        output3=self.ff2(F.relu(self.ff1(output2)))
-        output3=torch.add(output2,output3)
-        output3=F.relu(output3)
+        residual=output
+        output=self.ff2(F.relu(self.ff1(output)))
+        output=torch.add(output,residual)
+        output=self.norm(output)
 
         return output

@@ -25,6 +25,10 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SOS_token = 0
 EOS_token = 1
 
+def log(text):
+    with open("log.txt","a")as f:
+        f.write(text+"\n")
+
 
 class Lang:
     def __init__(self, name):

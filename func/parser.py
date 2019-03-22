@@ -27,7 +27,7 @@ def get_args():
     parser.add_argument("--teacher_rate", type=float, default="0.5", help="input epoch number")
 
     #そのたのパラメーター
-    parser.add_argument("--print_iter", type=int, default="50", help="input epoch number")
+    parser.add_argument("--print_iter", type=int, default="100", help="input epoch number")
     parser.add_argument("--not_train", type=bool, default=False, help="input epoch number")
     parser.add_argument("--use_train_data", type=bool, default=False, help="input epoch number")
     parser.add_argument("--model_name", type=str, default="", help="input epoch number")
