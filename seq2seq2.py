@@ -253,6 +253,7 @@ def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer, deco
 
     loss = 0
 
+    #encoder
     for ei in range(input_length):
         encoder_output, encoder_hidden = encoder(
             input_tensor[ei], encoder_hidden)
@@ -284,8 +285,8 @@ def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer, deco
             if decoder_input.item() == EOS_token:
                 break
 
+    #モデルの更新
     loss.backward()
-
     encoder_optimizer.step()
     decoder_optimizer.step()
 
@@ -338,6 +339,9 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
             plot_loss_avg = plot_loss_total / plot_every
             plot_losses.append(plot_loss_avg)
             plot_loss_total = 0
+
+        if iter % 2000 ==0:
+            evaluateRandomly(encoder1,attn_decoder1,n=5)
 
     showPlot(plot_losses)
 
