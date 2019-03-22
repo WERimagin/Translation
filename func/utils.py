@@ -124,9 +124,16 @@ def data_loader(args,path,first=True):
     t_word2id={w:i for w,i in t_word2id.items() if i<args.vocab_size}
     t_id2word={i:w for w,i in t_word2id.items()}
 
+    sources_rm=[]
+    targets_rm=[]
+    for s,t in zip(sources,targets):
+        if len(s.split())<=args.src_length and len(t.split())<=args.tgt_length:
+            sources_rm.append(s)
+            targets_rm.append(t)
 
-    sources_id=[[s_word2id[w] if w in s_word2id else s_word2id["<UNK>"] for w in sent.split()] for sent in sources]
-    targets_id=[[t_word2id[w] if w in t_word2id else t_word2id["<UNK>"] for w in sent.split()] for sent in targets]
+
+    sources_id=[[s_word2id[w] if w in s_word2id else s_word2id["<UNK>"] for w in sent.split()] for sent in sources_rm]
+    targets_id=[[t_word2id[w] if w in t_word2id else t_word2id["<UNK>"] for w in sent.split()] for sent in targets_rm]
     targets_id=[[t_word2id["<SOS>"]] + sent + [t_word2id["<EOS>"]] for sent in targets_id]
 
     train_sources=sources_id[0:train_data_size]

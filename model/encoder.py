@@ -8,7 +8,8 @@ class Encoder(nn.Module):
     def __init__(self, args):
         super(Encoder, self).__init__()
 
-        self.word_embed=nn.Embedding(args.vocab_size, args.embed_size,padding_idx=constants.PAD)
+        #self.word_embed=nn.Embedding(args.vocab_size, args.embed_size,padding_idx=constants.PAD)
+        self.word_embed=nn.Embedding(args.vocab_size, args.embed_size)
         self.gru=nn.GRU(args.embed_size,args.hidden_size,num_layers=args.layer_size,bidirectional=True,dropout=args.dropout,batch_first=True)
 
     def forward(self,input):#input:(batch,seq_len)
