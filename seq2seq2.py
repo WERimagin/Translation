@@ -299,6 +299,8 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
                       for i in range(n_iters)]
     criterion = nn.NLLLoss()
 
+    evaluateRandomly(encoder1,attn_decoder1,n=3)
+
     for iter in range(1, n_iters + 1):
         training_pair = training_pairs[iter - 1]
         input_tensor = training_pair[0]
@@ -320,8 +322,8 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
             plot_losses.append(plot_loss_avg)
             plot_loss_total = 0
 
-        if iter % 2000 ==0:
-            evaluateRandomly(encoder1,attn_decoder1,n=5)
+        if iter % 500 ==0:
+            evaluateRandomly(encoder1,attn_decoder1,n=3)
 
     showPlot(plot_losses)
 
