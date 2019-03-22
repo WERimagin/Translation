@@ -242,6 +242,7 @@ def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer, deco
 
     decoder_hidden = encoder_hidden
 
+    teacher_forcing_ratio=1
     use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
 
     if use_teacher_forcing:
@@ -325,9 +326,6 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
     showPlot(plot_losses)
 
 
-
-
-
 def showPlot(points):
     plt.figure()
     fig, ax = plt.subplots()
@@ -382,7 +380,8 @@ def evaluateRandomly(encoder, decoder, n=10):
         print('')
 
 input_lang, output_lang, pairs = prepareData('eng', 'fra', True)
-print(random.choice(pairs))
+for _ in range(5):
+    print(random.choice(pairs))
 
 hidden_size = 256
 encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
