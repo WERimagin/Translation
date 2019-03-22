@@ -131,6 +131,9 @@ def data_loader(args,path,first=True):
             sources_rm.append(s)
             targets_rm.append(t)
 
+    logger(args,"data_size:{}".format(len(sources)))
+    logger(args,"data_size:{}".format(len(sources_rm)))
+
 
     sources_id=[[s_word2id[w] if w in s_word2id else s_word2id["<UNK>"] for w in sent.split()] for sent in sources_rm]
     targets_id=[[t_word2id[w] if w in t_word2id else t_word2id["<UNK>"] for w in sent.split()] for sent in targets_rm]
@@ -151,7 +154,6 @@ def data_loader(args,path,first=True):
         "s_id2word":s_id2word,
         "t_id2word":t_id2word}
 
-    logger(args,"data_size:{}".format(data_size))
 
     return train_data,test_data
 
