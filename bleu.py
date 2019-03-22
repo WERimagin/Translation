@@ -52,8 +52,10 @@ with open(path,"r")as f:
     targets=t["targets"]
     predicts=t["predicts"]
 
-
-for i in range(0,100):
+data_size=len(src)
+print_size=100
+div_num=int(data_size/print_size)
+for i in range(0,data_size,div_num):
     print(src[i])
     print(targets[i])
     print(predicts[i])
