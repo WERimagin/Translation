@@ -168,17 +168,16 @@ class Decoder(nn.Module):
             for score, n in sorted(endnodes, key=lambda x:x[0]):
                 utterance = []
                 utterance.append(n.wordid.item())
-                print(utterance)
                 # back trace
                 #noneが出るまで（つまり、一番先頭に辿り着くまで）
                 while n.prevNode != None:
                     n = n.prevNode
                     utterance.append(n.wordid.item())
-                    print(utterance)
 
 
                 utterances.append(utterance)#(topk,len)
 
+            print(utterances)
             decoded_batch.append(utterances[0])#(batch,len)
 
         print("end")
