@@ -51,21 +51,23 @@ def model_handler(args,data,train=True):
     loss_sum=0
     #生成した文を保存するリスト
     predicts=[]
+    targets_list=[]
     for i_batch,batch in tqdm(enumerate(batches)):
         #これからそれぞれを取り出し処理してモデルへ
         input_words=make_vec(args,[sources[i] for i in batch])
         output_words=make_vec(args,[targets[i] for i in batch])#(batch,seq_len)
         #modelにデータを渡してpredictする
         predict=model(input_words,output_words,train)#(batch,seq_len,vocab_size)
-        predict=predict_sentence(args,predict,output_words[:,1:],t_id2word)#(batch,seq_len)
+        predict,target=predict_sentence(args,predict,output_words[:,1:],t_id2word)#(batch,seq_len)
         predicts.extend(predict)
+        targets_list.extend(target)
 
     sources=[" ".join([s_id2word[id] for id in sentence]) for sentence in sources]#idから単語へ戻す
-    targets=[" ".join([t_id2word[id] for id in sentence[1:-1]]) for sentence in targets]#idから単語へ戻す
+    #targets=[" ".join([t_id2word[id] for id in sentence[1:-1]]) for sentence in targets]#idから単語へ戻す
 
     with open("data/predict_sentences.json","w")as f:
         data={"sources":sources,
-                "targets":targets,
+                "targets":targets_list,
                 "predicts":predicts}
         json.dump(data,f)
 
