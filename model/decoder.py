@@ -162,6 +162,7 @@ class Decoder(nn.Module):
                     nodes.put((score,node))
                 qsize+=(beam_width-1)
 
+            print(len(endnodes))
             endnodes=[nodes.get() for _ in range(topk)] if len(endnodes)==0 else endnodes #(topk,len)
             utterances=[]
             #endnodesをidに変換
