@@ -60,6 +60,11 @@ for i in range(0,data_size,div_num):
     print(targets[i])
     print(predicts[i])
     print()
+for i in range(0,100):
+    print(src[i])
+    print(targets[i])
+    print(predicts[i])
+    print()
 
 target=[t.split() for t in targets]
 predict=[p.split() for p in predicts]
