@@ -17,6 +17,7 @@ class Decoder(nn.Module):
         self.layer_size=args.layer_size
         self.batch_size=0
         self.device=args.device
+        self.beam_size=args.beam_width
 
         #self.word_embed=nn.Embedding(self.vocab_size, self.embed_size,padding_idx=constants.PAD)
         self.word_embed=nn.Embedding(self.vocab_size, self.embed_size,padding_idx=constants.PAD)
@@ -104,7 +105,7 @@ class Decoder(nn.Module):
     #output_words:(batch,output_seq_len)
     def beam_decode(self,encoder_outputs,encoder_hidden,output_words,train=True):
 
-        beam_width=5
+        beam_width=self.beam_width
         topk=1  # how many sentence do you want to generate
         decoded_batch=[]
         batch_size=output_words.size(0)
