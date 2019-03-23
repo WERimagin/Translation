@@ -125,8 +125,8 @@ def data_loader(args,path,first=True):
 
     sources_rm=[]
     targets_rm=[]
-    start_pos=10000
-    
+    start_pos=0
+
     for s,t in zip(sources[start_pos:start_pos+data_size],targets[start_pos:start_pos+data_size]):
         if len(s.split())<=args.src_length and len(t.split())<=args.tgt_length:
             sources_rm.append(s)
