@@ -52,7 +52,7 @@ def model_handler(args,data,train=True,data_kind="train"):
         batch_size=args.test_batch_size
         model.eval()
     #batchをランダムな配列で指定する
-    batchmaker=BatchMaker(data_size,batch_size,train)
+    batchmaker=BatchMaker(data_size,batch_size,True)
     batches=batchmaker()
     predict_rate=0
     loss_sum=0
