@@ -39,7 +39,7 @@ class Decoder(nn.Module):
         embed=self.dropout(embed)
         embed=F.relu(embed)
 
-        output,decoder_hidden=self.gru(embed,decoder_hidden)#(batch,1,hidden_size),(2,batch,hidden_size)
+        output,decoder_hidden=self.gru(embed,decoder_hidden.contiguous())#(batch,1,hidden_size),(2,batch,hidden_size)
         output=self.dropout(output)
         output=torch.squeeze(output,1)#(batch,hidden_size)
 
