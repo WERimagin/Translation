@@ -20,7 +20,7 @@ class Decoder(nn.Module):
         self.device=args.device
 
         #self.word_embed=nn.Embedding(self.vocab_size, self.embed_size,padding_idx=constants.PAD)
-        self.word_embed=nn.Embedding(self.vocab_size, self.embed_size)
+        self.word_embed=nn.Embedding(self.vocab_size, self.embed_size,padding_idx=constants.PAD)
         #self.hidden_exchange=nn.Linear(self.hidden_size*2,self.hidden_size)
         self.gru=nn.GRU(self.embed_size,self.hidden_size,num_layers=args.layer_size,bidirectional=False,dropout=args.dropout,batch_first=True)#decoderは双方向にできない
 
@@ -38,9 +38,13 @@ class Decoder(nn.Module):
 
         embed=self.word_embed(input)#(batch,1,embed_size)
 
+        embed=self.dropout(embed)
+
         embed=F.relu(embed)
 
         output,hidden=self.gru(embed,self.hidden)#(batch,1,hidden_size),(2,batch,hidden_size)
+
+        output=self.dropout(output)
 
         self.hidden=hidden  #(2,batch,hidden_size)
 
