@@ -75,7 +75,7 @@ def model_handler(args,data,train=True,data_kind="train"):
                 now=time.time()
                 logger(args,"epoch,{}\tbatch\t{}\tloss:{}\ttime:{}".format(epoch,i_batch,loss.data,now-start))
                 predict,target=predict_sentence(args,predict,output_words[:,1:],t_id2word)#(batch,seq_len)
-            if i_batch%=500:
+            if i_batch%500==0:
                 for i in range(5):
                     print(predict[i])
                     print(target[i])
