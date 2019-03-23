@@ -61,6 +61,9 @@ def model_handler(args,data,train=True):
         predict,target=predict_sentence(args,predict,output_words[:,1:],t_id2word)#(batch,seq_len)
         predicts.extend(predict)
         targets_list.extend(target)
+        print(target)
+        print(predict)
+        print()
 
     sources=[" ".join([s_id2word[id] for id in sentence]) for sentence in sources]#idから単語へ戻す
     #targets=[" ".join([t_id2word[id] for id in sentence[1:-1]]) for sentence in targets]#idから単語へ戻す
