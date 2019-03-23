@@ -174,13 +174,10 @@ class Decoder(nn.Module):
                     n = n.prevNode
                     utterance.append(n.wordid.item())
 
+                #終わりからなので逆にする
+                utterances.append(utterance[::-1])#(topk,len)
 
-                utterances.append(utterance)#(topk,len)
-
-            print(utterances)
             decoded_batch.append(utterances[0])#(batch,len)
-
-        print(decoded_batch)
 
         return decoded_batch
 
