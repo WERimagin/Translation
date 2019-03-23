@@ -17,7 +17,7 @@ class Decoder(nn.Module):
         self.layer_size=args.layer_size
         self.batch_size=0
         self.device=args.device
-        self.beam_size=args.beam_width
+        self.beam_width=args.beam_width
 
         #self.word_embed=nn.Embedding(self.vocab_size, self.embed_size,padding_idx=constants.PAD)
         self.word_embed=nn.Embedding(self.vocab_size, self.embed_size,padding_idx=constants.PAD)
