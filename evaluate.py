@@ -58,7 +58,7 @@ def model_handler(args,data,train=True):
         output_words=make_vec(args,[targets[i] for i in batch])#(batch,seq_len)
         #modelにデータを渡してpredictする
         predict=model(input_words,output_words,train)#(batch,seq_len,vocab_size)
-        predict,target=predict_sentence(args,predict,output_words[1:,:],t_id2word)#(batch,seq_len)
+        predict,target=predict_sentence(args,predict,output_words[:,1:],t_id2word)#(batch,seq_len)
         predicts.extend(predict)
         targets_list.extend(target)
         print(predict)
