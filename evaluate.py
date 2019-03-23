@@ -26,7 +26,8 @@ import time
 from model.seq2seq import Seq2Seq
 from model.seq2seq2 import Seq2Seq2
 from model.transformer.transformer import Transformer
-from func.utils import Word2Id,BatchMaker,make_vec,make_vec_c,to_var,logger,data_loader,loss_calc,predict_calc,predict_sentence
+from func.utils import Word2Id,BatchMaker,make_vec,make_vec_c,to_var,logger,data_loader
+from func.predict import loss_calc,predict_calc,predict_sentence
 from func import constants
 from func.parser import get_args
 import nltk
@@ -85,12 +86,10 @@ model.to(args.device)
 if args.model_name!="":
     param = torch.load("model_data/{}".format(args.model_name))
     model.load_state_dict(param)
-    print("k")
 #start_epochが0なら最初から、指定されていたら学習済みのものをロードする
 elif args.start_epoch>=1:
     param = torch.load("model_data/epoch_{}_model.pth".format(args.start_epoch-1))
     model.load_state_dict(param)
-    print("t")
 else:
     args.start_epoch=0
 
