@@ -12,7 +12,7 @@ def get_args():
     ##データのオプション
     parser.add_argument("--src_length", type=int, default="10", help="input train batch size")
     parser.add_argument("--tgt_length", type=int, default="10", help="input test batch size")
-    parser.add_argument("--model_version", type=int, default="3", help="input test batch size")
+    parser.add_argument("--model_version", type=int, default="1", help="input test batch size")
     parser.add_argument("--use_interro", type=bool, default=True, help="input test batch size")
     parser.add_argument("--data_rate", type=float, default="1", help="input epoch number")
 
