@@ -140,12 +140,16 @@ def data_loader(args,path,first=True):
     targets_id=[[t_word2id[w] if w in t_word2id else t_word2id["<UNK>"] for w in sent.split()] for sent in targets_rm]
     targets_id=[[t_word2id["<SOS>"]] + sent + [t_word2id["<EOS>"]] for sent in targets_id]
 
+    #データをシャッフルし、9割をtrain,1割をtest
+    random.seed(0)
     train_data_size=int(len(sources_id)*0.9)
+    pairs=[sources_id,targets_id]
+    random.shuffle(pairs)
 
-    train_sources=sources_id[0:train_data_size]
-    train_targets=targets_id[0:train_data_size]
-    test_sources=sources_id[train_data_size:data_size]
-    test_targets=targets_id[train_data_size:data_size]
+    train_sources=pairs[0][0:train_data_size]
+    train_targets=pairs[1][0:train_data_size]
+    test_sources=pairs[0][train_data_size:]
+    test_targets=pairs[1][train_data_size:]
 
     train_data={"sources":train_sources,
         "targets":train_targets,
