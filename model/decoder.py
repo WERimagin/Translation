@@ -174,8 +174,8 @@ class Decoder(nn.Module):
                     n = n.prevNode
                     utterance.append(n.wordid.item())
 
-                #終わりからなので逆にする
-                utterances.append(utterance[::-1])#(topk,len)
+                #終わりからなので逆にする。SOSは除く
+                utterances.append(utterance[1::-1])#(topk,len)
 
             decoded_batch.append(utterances[0])#(batch,len)
 
