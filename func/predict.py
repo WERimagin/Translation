@@ -47,6 +47,7 @@ def predict_sentence(args,predict,target,id2word):
         predict=torch.argmax(predict,dim=-1) if predict.dim()==3 else predict
         predict=predict.tolist()#(batch,len)
     target=target.tolist()#(batch,len)
+    print(predict,target)
     #EOSの前まで
     #batchの中の一つずつ
     predict_list=[" ".join([id2word[w] for w in sentence[0:index_remake(sentence,constants.EOS)]]) \
