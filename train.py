@@ -64,7 +64,7 @@ def model_handler(args,data,train=True,data_kind="train"):
         if train:
             optimizer.zero_grad()
         #modelにデータを渡してpredictする
-        predict=model(input_words,output_words,train=True)#(batch,seq_len,vocab_size)
+        predict=model(input_words,output_words,train)#(batch,seq_len,vocab_size)
         #trainの場合はパラメータの更新を行う
         if train==True:
             #predictもoutput_wordsも<SOS>を除く
