@@ -139,7 +139,6 @@ class Decoder(nn.Module):
                 #nodeの取り出し
                 score, n = nodes.get()
                 decoder_input = n.wordid
-                print(decoder_input)
                 decoder_hidden = n.h
 
                 #EOSの判定。EOSならendnodesに入れて次へ。文の個数が溜まってたら終了
@@ -169,6 +168,7 @@ class Decoder(nn.Module):
             for score, n in sorted(endnodes, key=lambda x:x[0]):
                 utterance = []
                 utterance.append(n.wordid.item())
+                print(utterance)
                 # back trace
                 #noneが出るまで（つまり、一番先頭に辿り着くまで）
                 while n.prevNode != None:
