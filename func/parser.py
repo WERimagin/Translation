@@ -32,6 +32,7 @@ def get_args():
     parser.add_argument("--use_train_data", type=bool, default=False, help="input epoch number")
     parser.add_argument("--model_name", type=str, default="", help="input epoch number")
     parser.add_argument("--include_pad", type=bool, default=False, help="input epoch number")
+    parser.add_argument("--beam", type=bool, default=False, help="input epoch number")
     args = parser.parse_args()
     args.start_time=str(datetime.datetime.today()).replace(" ","-")
     args.high_epoch=0

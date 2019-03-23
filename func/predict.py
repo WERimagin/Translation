@@ -43,10 +43,10 @@ def predict_calc(predict,target):
 
 #idからid2wordを使ってwordに戻して返す
 def predict_sentence(args,predict,target,id2word):
-    #predict:(batch,seq_len)
-    #target:(batch,seq_len)
-    predict=torch.argmax(predict,dim=-1).tolist()#(batch,seq_len)
-    target=target.tolist()
+    if args.beam==False:
+        predict=torch.argmax(predict,dim=-1) if predict.dim()==3 else predict
+        predict=predict.tolist()#(batch,len)
+    target=target.tolist()#(batch,len)
     #EOSの前まで
     #batchの中の一つずつ
     predict_list=[" ".join([id2word[w] for w in sentence[0:index_remake(sentence,constants.EOS)]]) \
