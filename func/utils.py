@@ -125,7 +125,9 @@ def data_loader(args,path,first=True):
 
     sources_rm=[]
     targets_rm=[]
-    for s,t in zip(sources[0:data_size],targets[0:data_size]):
+    start_pos=10000
+    
+    for s,t in zip(sources[start_pos:start_pos+data_size],targets[start_pos:start_pos+data_size]):
         if len(s.split())<=args.src_length and len(t.split())<=args.tgt_length:
             sources_rm.append(s)
             targets_rm.append(t)
@@ -197,16 +199,20 @@ def predict_sentence(args,predict,target,id2word):
     #predict:(batch,seq_len)
     #target:(batch,seq_len)
     predict=torch.argmax(predict,dim=-1).tolist()#(batch,seq_len)
+    target=target.tolist()
     #EOSの前まで
-    predict_list=[]
     #batchの中の一つずつ
     predict_list=[" ".join([id2word[w] for w in sentence[0:index_remake(sentence,constants.EOS)]]) \
                     for sentence in predict] if args.include_pad==False else \
                 [" ".join([id2word[w] for w in sentence])\
                     for sentence in predict]
+    target_list=[" ".join([id2word[w] for w in sentence[0:index_remake(sentence,constants.EOS)]]) \
+                    for sentence in target] if args.include_pad==False else \
+                [" ".join([id2word[w] for w in sentence])\
+                    for sentence in target]
     #predict_list=[" ".join([id2word[w] for w in sentence[0:index_ramake(sentence,constants.EOS)]])\
     #                                    for sentence in predict]
-    return predict_list
+    return predict_list,target_list
 
 #indexの改造,要素がない場合はリストの長さを返す
 def index_remake(sentence_list,word):

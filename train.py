@@ -27,7 +27,7 @@ from model.seq2seq2 import Seq2Seq2
 from model.transformer.transformer import Transformer
 from model.seq2seq4 import Seq2Seq4
 
-from func.utils import Word2Id,BatchMaker,make_vec,make_vec_c,to_var,logger,data_loader,loss_calc,predict_calc
+from func.utils import Word2Id,BatchMaker,make_vec,make_vec_c,to_var,logger,data_loader,loss_calc,predict_calc,predict_sentence
 from func import constants
 from func.parser import get_args
 import nltk
@@ -42,6 +42,7 @@ def model_handler(args,data,train=True,data_kind="train"):
     start=time.time()
     sources=data["sources"]
     targets=data["targets"]
+    t_id2word=data["t_id2word"]
     data_size=len(sources)
     batch_size=0
     if train:
@@ -73,6 +74,11 @@ def model_handler(args,data,train=True,data_kind="train"):
             if i_batch%args.print_iter==0:
                 now=time.time()
                 logger(args,"epoch,{}\tbatch\t{}\tloss:{}\ttime:{}".format(epoch,i_batch,loss.data,now-start))
+                predict,target=predict_sentence(args,predict,output_words[:,1:],t_id2word)#(batch,seq_len)
+                for i in range(5):
+                    print(predict[i])
+                    print(target[i])
+                    print()
         else:
             predict_rate+=predict_calc(predict,output_words[:,1:])
 
