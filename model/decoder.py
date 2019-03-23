@@ -180,7 +180,7 @@ class Decoder(nn.Module):
             print(utterances)
             decoded_batch.append(utterances[0])#(batch,len)
 
-        print("end")
+        print(decoded_batch)
 
         return decoded_batch
 
