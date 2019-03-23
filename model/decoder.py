@@ -162,7 +162,6 @@ class Decoder(nn.Module):
                     nodes.put((score,node))
                 qsize+=(beam_width-1)
 
-            print(len(endnodes))
             endnodes=[nodes.get() for _ in range(topk)] if len(endnodes)==0 else endnodes #(topk,len)
             utterances=[]
             #endnodesをidに変換
@@ -175,11 +174,14 @@ class Decoder(nn.Module):
                 while n.prevNode != None:
                     n = n.prevNode
                     utterance.append(n.wordid.item())
+                    print(utterance)
 
 
                 utterances.append(utterance)#(topk,len)
 
             decoded_batch.append(utterances[0])#(batch,len)
+
+        print("end")
 
         return decoded_batch
 
