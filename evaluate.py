@@ -85,13 +85,14 @@ model.to(args.device)
 if args.model_name!="":
     param = torch.load("model_data/{}".format(args.model_name))
     model.load_state_dict(param)
+    print("k")
 #start_epochが0なら最初から、指定されていたら学習済みのものをロードする
 elif args.start_epoch>=1:
     param = torch.load("model_data/epoch_{}_model.pth".format(args.start_epoch-1))
     model.load_state_dict(param)
+    print("t")
 else:
     args.start_epoch=0
-
 
 #pytorch0.4より、OpenNMT参考
 device=torch.device("cuda:{}".format(args.cuda_number) if torch.cuda.is_available() else "cpu")

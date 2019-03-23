@@ -84,7 +84,6 @@ class Decoder(nn.Module):
         #use_teacherがFalseだとほとんど学習できない。テストの時のみ
         #他のものだとuse_teacherの割合が0.5で使用している。1でもいいはず。要調整
         #1なら全て正解データ、0なら全て出力されたデータ
-        use_teacher=train
 
         #出力の長さ。教師がない場合は20で固定
         output_maxlen=output_seq_len

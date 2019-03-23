@@ -197,6 +197,7 @@ def predict_sentence(args,predict,target,id2word):
     #predict:(batch,seq_len)
     #target:(batch,seq_len)
     predict=torch.argmax(predict,dim=-1).tolist()#(batch,seq_len)
+    print(predict)
     #EOSの前まで
     predict_list=[]
     #batchの中の一つずつ
