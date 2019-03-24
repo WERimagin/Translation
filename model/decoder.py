@@ -100,6 +100,7 @@ class Decoder(nn.Module):
         outputs=torch.transpose(outputs,0,1)#(batch,seq_len,vocab_size)
         return outputs
 
+    #https://github.com/budzianowski/PyTorch-Beam-Search-Decoding/blob/master/decode_beam.py
     #encoder_output:(batch,seq_len,hidden_size*direction)
     #encoder_hidden:(direction*layer_size,batch,hidden_size)
     #output_words:(batch,output_seq_len)
