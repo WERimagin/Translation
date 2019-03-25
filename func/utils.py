@@ -125,7 +125,7 @@ def data_loader(args,path,first=True):
     data_size=int(len(sources)*args.data_rate)
     pairs=[[s,t] for s,t in zip(sources[0:data_size],targets[0:data_size])]
     random.shuffle(pairs)
-    print(pairs[0:3])
+    print(pairs[0:10])
 
     sources_rm=[]
     targets_rm=[]
