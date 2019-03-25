@@ -115,26 +115,26 @@ def data_loader(args,path,first=True):
         s_word2id=t["s_word2id"]
         t_word2id=t["t_word2id"]
 
-    data_size=int(len(sources)*args.data_rate)
-
     s_word2id={w:i for w,i in s_word2id.items() if i<args.vocab_size}
     s_id2word={i:w for w,i in s_word2id.items()}
 
     t_word2id={w:i for w,i in t_word2id.items() if i<args.vocab_size}
     t_id2word={i:w for w,i in t_word2id.items()}
 
+    random.seed(0)
+    data_size=int(len(sources)*args.data_rate)
+    pairs=[sources[0:data_size],targets[0:data_size]]
+    random.shuffle(pairs)
+
     sources_rm=[]
     targets_rm=[]
-    start_pos=0
 
-    for s,t in zip(sources[start_pos:start_pos+data_size],targets[start_pos:start_pos+data_size]):
+    for s,t in pairs:
         if len(s.split())<=args.src_length and len(t.split())<=args.tgt_length:
             sources_rm.append(s)
             targets_rm.append(t)
 
-    logger(args,"data_size:{}".format(len(sources)))
-    logger(args,"data_size:{}".format(len(sources_rm)))
-
+    logger(args,"data_size:{}".format(len(source_rm)))
 
     sources_id=[[s_word2id[w] if w in s_word2id else s_word2id["<UNK>"] for w in sent.split()] for sent in sources_rm]
     targets_id=[[t_word2id[w] if w in t_word2id else t_word2id["<UNK>"] for w in sent.split()] for sent in targets_rm]
@@ -144,7 +144,6 @@ def data_loader(args,path,first=True):
     random.seed(0)
     train_data_size=int(len(sources_id)*0.9)
     pairs=[sources_id,targets_id]
-    random.shuffle(pairs)
 
     train_sources=pairs[0][0:train_data_size]
     train_targets=pairs[1][0:train_data_size]
