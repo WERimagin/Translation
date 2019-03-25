@@ -129,7 +129,7 @@ def data_loader(args,path,first=True):
     sources_rm=[]
     targets_rm=[]
 
-    for s,t in pairs:
+    for s,t in zip(pairs[0],pairs[1]):
         if len(s.split())<=args.src_length and len(t.split())<=args.tgt_length:
             sources_rm.append(s)
             targets_rm.append(t)
