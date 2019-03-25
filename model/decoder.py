@@ -153,7 +153,7 @@ class Decoder(nn.Module):
                         continue
 
                 #(1,vocab_size),(1,hidden_size)
-                decoder_output,decoder_hidden=self.decode_step(decoder_input,decoder_hidden,encoder_output)
+                decoder_output,decoder_hidden,_=self.decode_step(decoder_input,decoder_hidden,encoder_output)
                 log_prob, indexes = torch.topk(decoder_output, beam_width)#(1,beam_width),(1,beam_width)
 
                 for new_k in range(beam_width):
