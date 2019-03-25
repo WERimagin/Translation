@@ -14,7 +14,7 @@ def get_args():
     parser.add_argument("--tgt_length", type=int, default="10", help="input test batch size")
     parser.add_argument("--model_version", type=int, default="1", help="input test batch size")
     parser.add_argument("--use_interro", type=bool, default=True, help="input test batch size")
-    parser.add_argument("--data_rate", type=float, default="1", help="input epoch number")
+    parser.add_argument("--data_rate", type=float, default="1.0", help="input epoch number")
 
     #model_hyper_parameter
     parser.add_argument("--embed_size", type=int, default="300", help="input rnn hidden size")

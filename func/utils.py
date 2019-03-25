@@ -123,13 +123,14 @@ def data_loader(args,path,first=True):
 
     random.seed(0)
     data_size=int(len(sources)*args.data_rate)
-    pairs=[sources[0:data_size],targets[0:data_size]]
+    pairs=[[s,t] for s,t in zip(sources[0:data_size],targets[0:data_size])]
     random.shuffle(pairs)
+    print(pairs[0:3])
 
     sources_rm=[]
     targets_rm=[]
 
-    for s,t in zip(pairs[0],pairs[1]):
+    for s,t in pairs:
         if len(s.split())<=args.src_length and len(t.split())<=args.tgt_length:
             sources_rm.append(s)
             targets_rm.append(t)
