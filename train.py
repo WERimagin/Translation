@@ -76,15 +76,10 @@ def model_handler(args,data,train=True,data_kind="train"):
                 now=time.time()
                 logger(args,"epoch,{}\tbatch\t{}\tloss:{}\ttime:{}".format(epoch,i_batch,loss.data,now-start))
                 predict,target=predict_sentence(args,predict,output_words[:,1:],t_id2word)#(batch,seq_len)
-            if i_batch==0:
-                for i in range(3):
-                    logger(args,predict[i])
-                    logger(args,target[i])
-                    logger(args,"")
         else:
             predict_rate+=predict_calc(predict,output_words[:,1:])
             predict,target=predict_sentence(args,predict,output_words[:,1:],t_id2word)#(batch,seq_len)
-            if i_batch==0:
+            if i_batch==100000:
                 for i in range(3):
                     logger(args,predict[i])
                     logger(args,target[i])
