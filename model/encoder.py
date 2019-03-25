@@ -18,9 +18,7 @@ class Encoder(nn.Module):
         #単語ベクトルへ変換
         embed = self.word_embed(input)#(batch,seq_len,embed_size)
 
-        embed=self.dropout(embed)
-
         #GRUに投げる（単語ごとではなくEncoderではシーケンスを一括）
         output, hidden=self.gru(embed) #(batch,seq_len,hidden_size*direction),(direction*layer_size,batch,hidden_size)
-        
+
         return output, hidden

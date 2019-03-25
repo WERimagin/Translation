@@ -56,7 +56,8 @@ class Decoder(nn.Module):
             output=self.attention_wight(torch.cat((output,attention_output),dim=-1))#(batch,hidden_size*3)
 
         #relu
-        output=self.dropout(F.relu(output))#(barch,hidden_size*3)
+        output=self.dropout(output)
+        output=F.relu(output)#(barch,hidden_size*3)
 
         #単語辞書のサイズに変換する
         output=self.out(output)#(batch,vocab_size)
