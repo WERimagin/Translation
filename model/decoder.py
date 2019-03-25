@@ -64,7 +64,7 @@ class Decoder(nn.Module):
         #outputの中で最大値（実際に出力する単語）を返す
         predict=torch.argmax(output,dim=-1) #(batch)
 
-        return output,decoder_hidden
+        return output,decoder_hidden,predict
 
     #encoder_output:(batch,seq_len,hidden_size*direction)
     #encoder_hidden:(direction*layer_size,batch,hidden_size)
@@ -96,7 +96,7 @@ class Decoder(nn.Module):
         for i in range(output_maxlen):
             #使用する入力。
             current_input=source[:,i] if random.random()<teacher_forcing_ratio else predict.view(-1)#(batch)
-            output,decoder_hidden=self.decode_step(current_input,decoder_hidden,encoder_output)#(batch,vocab_size),(batch)
+            output,decoder_hidden,predict=self.decode_step(current_input,decoder_hidden,encoder_output)#(batch,vocab_size),(batch)
             outputs[i]=output#outputsにdecoderの各ステップから出力されたベクトルを入力
 
         outputs=torch.transpose(outputs,0,1)#(batch,seq_len,vocab_size)
