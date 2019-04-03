@@ -24,7 +24,8 @@ from torch.autograd import Variable
 import time
 from model.seq2seq import Seq2Seq
 from model.seq2seq2 import Seq2Seq2
-from model.transformer.transformer import Transformer
+#from model.transformer.Models import Transformer
+from transformer.Models import Transformer
 from model.seq2seq4 import Seq2Seq4
 
 from func.utils import Word2Id,BatchMaker,make_vec,make_vec_c,to_var,logger,data_loader
