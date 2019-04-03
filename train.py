@@ -74,7 +74,7 @@ def model_handler(args,data,train=True,data_kind="train"):
             loss_sum+=loss.data
             if i_batch%args.print_iter==0:
                 now=time.time()
-                logger(args,"epoch,{}\tbatch\t{}\tloss:{}\ttime:{}".format(epoch,i_batch,loss.data,now-start))
+                logger(args,"epoch,{}\tbatch\t{}\tloss:{}\ttime:{}".format(epoch,i_batch,loss.data/args.train_batch_size,now-start))
                 predict,target=predict_sentence(args,predict,output_words[:,1:],t_id2word)#(batch,seq_len)
         else:
             predict_rate+=predict_calc(predict,output_words[:,1:])

@@ -1,17 +1,25 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import numpy as np
 
-
+#scaled-dot-product-attention:パラメーターを使用しないから計算が早い
 #key:(batch,seq_len,dim_k)
 #query:(batch,seq_len,dim_k)
 #value:(batch,seq_len,dim_v)
-def Attention(key,query,value):
+#pad_mask:(batch,seq_len,seq_len)
+def Attention(key,query,value,mask):
     scaler=float(key.size(2)**0.5)#dim_kの平方根
+    batch_size,seq_len,_=key.size()
 
     key=torch.transpose(key,1,2)#(batch,dim_k,seq_len)
 
     qk=torch.bmm(query,key)#(batch,seq_len,seq_len)
+
+    if mask is not None:
+        mask=mask.view(1,seq_len,seq_len).repeat(batch_size,1,1)
+        qk=qk.masked_fill(mask,-np.inf)
+
     qk=torch.softmax(torch.div(qk,scaler),dim=-1)#(batch,seq_len,seq_len)
     #qk=torch.softmax(qk,dim=-1)#(batch,seq_len,seq_len)
 
@@ -37,7 +45,8 @@ class MultiHeadAttention(nn.Module):
     #key:(batch,seq_len,dim)
     #query:(batch,seq_len,dim)
     #value:(batch,seq_len,dim)
-    def forward(self,key,query,value):
+    #mask:(seq_len,seq_len)
+    def forward(self,key,query,value,mask=None):
         batch,k_seq_len,dim=key.size()
         _,q_seq_len,_=query.size()
         _,v_seq_len,_=value.size()
@@ -52,7 +61,7 @@ class MultiHeadAttention(nn.Module):
         head_v=head_v.view(batch,v_seq_len,self.head_num,self.head_dim).transpose(1,2).contiguous().view(batch*self.head_num,v_seq_len,self.head_dim)
 
         #(batch*head_num,q_seq_len,head_dim)
-        output=Attention(head_k,head_q,head_v)
+        output=Attention(head_k,head_q,head_v,mask)
 
         #(batch,seq_len,dim)
         output=output.view(batch,self.head_num,q_seq_len,self.head_dim).transpose(1,2).contiguous().view(batch,q_seq_len,dim)
@@ -92,7 +101,7 @@ class EncoderLayer(nn.Module):
 class DecoderLayer(nn.Module):
     def __init__(self,args):
         super(DecoderLayer,self).__init__()
-        
+
         self.hidden_size=args.hidden_size
 
         self.self_attention=MultiHeadAttention(args)
