@@ -55,15 +55,15 @@ class MultiHeadAttention(nn.Module):
         head_v=self.Wv(value)#(batch,seq_len,dim)
 
         #(batch*head_num,seq_len,head_dim)
-        head_k=head_k.view(batch,k_seq_len,self.head_num,self.head_dim).transpose(1,2).contiguous().view(batch*self.head_num,k_seq_len,self.head_dim)
-        head_q=head_q.view(batch,q_seq_len,self.head_num,self.head_dim).transpose(1,2).contiguous().view(batch*self.head_num,q_seq_len,self.head_dim)
-        head_v=head_v.view(batch,v_seq_len,self.head_num,self.head_dim).transpose(1,2).contiguous().view(batch*self.head_num,v_seq_len,self.head_dim)
+        head_k=head_k.view(batch,k_seq_len,self.head_num,self.head_dim).permute(2,0,1,3).contiguous().view(batch*self.head_num,k_seq_len,self.head_dim)
+        head_q=head_q.view(batch,q_seq_len,self.head_num,self.head_dim).permute(2,0,1,3).contiguous().view(batch*self.head_num,q_seq_len,self.head_dim)
+        head_v=head_v.view(batch,v_seq_len,self.head_num,self.head_dim).permute(2,0,1,3).contiguous().view(batch*self.head_num,v_seq_len,self.head_dim)
 
         mask=mask.repeat(self.head_num,1,1)#(batch*head_dim,q_seq_len,k_seq_len)
         output=Attention(head_k,head_q,head_v,mask)#(batch*head_num,q_seq_len,head_dim)
 
         #(batch,seq_len,dim)
-        output=output.view(batch,self.head_num,q_seq_len,self.head_dim).transpose(1,2).contiguous().view(batch,q_seq_len,dim)
+        output=output.view(batch,self.head_num,q_seq_len,self.head_dim).permute(1,2,0,3).contiguous().view(batch,q_seq_len,dim)
 
         #(batch,seq_len,dim)
         output=self.Wconcat(output)
