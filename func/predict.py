@@ -29,8 +29,19 @@ def predict_calc(predict,target):
     if type=="normal":
         batch=predict.size(0)
         seq_len=predict.size(1)
+
+
+        #print(predict.size())
+        #print(target.size())
+
+        ##print(torch.argmax(predict,dim=-1))
+        #print(target)
+
         predict=predict.contiguous().view(batch*seq_len,-1)
         target=target.contiguous().view(-1)
+
+        #print(torch.argmax(predict,dim=-1)==target)
+
         predict_rate=(torch.argmax(predict,dim=-1)==target).sum().item()/seq_len
         return predict_rate
     elif type=="bleu":

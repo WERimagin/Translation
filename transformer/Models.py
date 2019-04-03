@@ -62,6 +62,14 @@ def get_subsequent_mask(seq):
 
     return subsequent_mask
 
+#(batch_size,seq_len,dim)
+def position_encoder(batch_size,seq_len,dim,device):
+    output=[[[np.sin(pos/(10000**(2*i/dim))) if i%2==0 else np.cos(pos/(10000*(2*i/dim))) for i in range(dim)] \
+                                                                                    for pos in range(seq_len)] \
+                                                                                    for _ in range(batch_size)]
+    output=torch.tensor(output,dtype=torch.float).to(device)
+    return output
+
 class Encoder(nn.Module):
     ''' A encoder model with self attention mechanism. '''
 
@@ -99,8 +107,9 @@ class Encoder(nn.Module):
 
         # -- Forward
         #positionをたす
-        #enc_output = self.src_word_emb(src_seq) + self.position_enc(src_pos)
+        #enc_output = self.src_word_emb(src_seq) + position_encoder()
         enc_output = self.src_word_emb(src_seq)
+        enc_output=enc_output+position_encoder(enc_output.size(0),enc_output.size(1),enc_output.size(2),enc_output.device)
 
         for enc_layer in self.layer_stack:
             enc_output, enc_slf_attn = enc_layer(
@@ -157,6 +166,7 @@ class Decoder(nn.Module):
         # -- Forward
         #dec_output = self.tgt_word_emb(tgt_seq) + self.position_enc(tgt_pos)
         dec_output = self.tgt_word_emb(tgt_seq)
+        dec_output=dec_output+position_encoder(dec_output.size(0),dec_output.size(1),dec_output.size(2),dec_output.device)
 
         for dec_layer in self.layer_stack:
             dec_output, dec_slf_attn, dec_enc_attn = dec_layer(
@@ -236,6 +246,7 @@ class Transformer(nn.Module):
         enc_output, *_ = self.encoder(src_seq, src_pos)
         dec_output, *_ = self.decoder(tgt_seq, tgt_pos, src_seq, enc_output)
         seq_logit = self.tgt_word_prj(dec_output) * self.x_logit_scale
+
 
         return seq_logit
         #return seq_logit.view(-1, seq_logit.size(2))#(batch*seq_len,vocab_size)

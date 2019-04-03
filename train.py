@@ -35,6 +35,7 @@ from func.parser import get_args
 import nltk
 import datetime
 import os
+import random
 
 
 
@@ -76,14 +77,14 @@ def model_handler(args,data,train=True,data_kind="train"):
             if i_batch%args.print_iter==0:
                 now=time.time()
                 logger(args,"epoch,{}\tbatch\t{}\tloss:{}\ttime:{}".format(epoch,i_batch,loss.data/args.train_batch_size,now-start))
-                predict,target=predict_sentence(args,predict,output_words[:,1:],t_id2word)#(batch,seq_len)
+                #predict,target=predict_sentence(args,predict,output_words[:,1:],t_id2word)#(batch,seq_len)
         else:
             predict_rate+=predict_calc(predict,output_words[:,1:])
             predict,target=predict_sentence(args,predict,output_words[:,1:],t_id2word)#(batch,seq_len)
-            if i_batch==100000:
+            if i_batch==0:
                 for i in range(3):
-                    logger(args,predict[i])
-                    logger(args,target[i])
+                    logger(args,"predict:{}".format(predict[i]))
+                    logger(args,"target:{}".format(target[i]))
                     logger(args,"")
 
     #epochの記録
