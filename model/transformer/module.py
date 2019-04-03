@@ -8,23 +8,34 @@ import numpy as np
 #query:(batch,seq_len,dim_k)
 #value:(batch,seq_len,dim_v)
 #pad_mask:(batch,seq_len,seq_len)
-def Attention(key,query,value,mask):
-    scaler=float(key.size(2)**0.5)#dim_kの平方根
-    batch_size,seq_len,_=key.size()
+class ScaledDotProductAttention(nn.Module):
+    def __init__(self,args):
+        super(ScaledDotProductAttention,self).__init__()
+        self.hidden_size=args.hidden_size
+        self.scaler=float(self.hidden_size**0.5)
 
-    key=torch.transpose(key,1,2)#(batch,dim_k,seq_len)
-    qk=torch.bmm(query,key)#(batch,seq_len,seq_len)
+        self.dropout=nn.Dropout(args.dropout)
 
-    if mask is not None:
-        #mask=mask.view(1,seq_len,seq_len).repeat(batch_size,1,1)
-        qk=qk.masked_fill(mask,-np.inf)
+    def forward(self,key,query,value,mask):
+        batch_size,seq_len,_=key.size()
 
-    qk=torch.softmax(torch.div(qk,scaler),dim=-1)#(batch,seq_len,seq_len)
-    #qk=torch.softmax(qk,dim=-1)#(batch,seq_len,seq_len)
+        key=key.transpose(1,2)#(batch,dim_k,seq_len)
+        qk=torch.bmm(query,key)#(batch,seq_len,seq_len)
+        qk=qk/self.scaler#(batch,seq_len,seq_len)
 
-    output=torch.bmm(qk,value)#(batch,seq_len,dim_v)
+        if mask is not None:
+            #mask=mask.view(1,seq_len,seq_len).repeat(batch_size,1,1)
+            qk=qk.masked_fill(mask,-np.inf)
 
-    return output
+
+        #print(qk.size(),qk)
+        #qk=nn.Dropout(qk)
+        #qk=torch.softmax(qk,dim=-1)#(batch,seq_len,seq_len)
+        qk=torch.softmax(qk,dim=-1)
+        qk=self.dropout(qk)
+        output=torch.bmm(qk,value)#(batch,seq_len,dim_v)
+
+        return output
 
 class MultiHeadAttention(nn.Module):
     def __init__(self,args):
@@ -33,13 +44,14 @@ class MultiHeadAttention(nn.Module):
         self.head_num=args.head_num
         self.head_dim=int(self.hidden_size/self.head_num)
 
-        self.W=nn.Linear(100,200)
-
         self.Wk=nn.Linear(self.hidden_size,self.hidden_size)
         self.Wq=nn.Linear(self.hidden_size,self.hidden_size)
         self.Wv=nn.Linear(self.hidden_size,self.hidden_size)
 
         self.Wconcat=nn.Linear(self.hidden_size,self.hidden_size)
+
+        self.Attention=ScaledDotProductAttention(args)
+        self.dropout=nn.Dropout(args.dropout)
 
     #key:(batch,seq_len,dim)
     #query:(batch,seq_len,dim)
@@ -60,13 +72,14 @@ class MultiHeadAttention(nn.Module):
         head_v=head_v.view(batch,v_seq_len,self.head_num,self.head_dim).permute(2,0,1,3).contiguous().view(batch*self.head_num,v_seq_len,self.head_dim)
 
         mask=mask.repeat(self.head_num,1,1)#(batch*head_dim,q_seq_len,k_seq_len)
-        output=Attention(head_k,head_q,head_v,mask)#(batch*head_num,q_seq_len,head_dim)
+        output=self.Attention(head_k,head_q,head_v,mask)#(batch*head_num,q_seq_len,head_dim)
 
         #(batch,seq_len,dim)
         output=output.view(batch,self.head_num,q_seq_len,self.head_dim).permute(1,2,0,3).contiguous().view(batch,q_seq_len,dim)
 
         #(batch,seq_len,dim)
         output=self.Wconcat(output)
+        output=self.dropout(output)
 
         return output
 
@@ -80,12 +93,14 @@ class EncoderLayer(nn.Module):
         self.ff1=nn.Linear(self.hidden_size,self.hidden_size)
         self.ff2=nn.Linear(self.hidden_size,self.hidden_size)
         self.norm=nn.LayerNorm(self.hidden_size)
+        self.dropout=nn.Dropout(args.dropout)
 
     #input:(batch,seq_len,dim)
     def forward(self,input,self_attention_mask,non_pad_mask):
         #MultiHead
         residual=input
         output=self.self_attention(input,input,input,self_attention_mask)#(batch,seq_len,dim)
+        output=self.dropout(output)
         output=torch.add(output,residual)
         output=self.norm(output)
         output*=non_pad_mask
@@ -93,6 +108,7 @@ class EncoderLayer(nn.Module):
         ##FF
         residual=output
         output=self.ff2(F.relu(self.ff1(output)))
+        output=self.dropout(output)
         output=torch.add(output,residual)
         output=self.norm(output)
         output*=non_pad_mask
@@ -110,24 +126,28 @@ class DecoderLayer(nn.Module):
         self.ff1=nn.Linear(self.hidden_size,self.hidden_size)
         self.ff2=nn.Linear(self.hidden_size,self.hidden_size)
         self.norm=nn.LayerNorm(self.hidden_size)
+        self.dropout=nn.Dropout(args.dropout)
 
     #input:(batch,seq_len,dim)
     def forward(self,input,encoder_output,self_attention_mask,enc_dec_attention_mask,non_pad_mask):
 
         residual=input
         output=self.self_attention(input,input,input,self_attention_mask)#(batch,seq_len,dim)
+        output=self.dropout(output)
         output=torch.add(output,residual)
         output=self.norm(output)
         output*=non_pad_mask
 
         residual=output
         output=self.enc_dec_attention(encoder_output,output,encoder_output,enc_dec_attention_mask)#(batch,seq_len,dim)
+        output=self.dropout(output)
         output=torch.add(output,residual)
         output=self.norm(output)
         output*=non_pad_mask
 
         residual=output
         output=self.ff2(F.relu(self.ff1(output)))
+        output=self.dropout(output)
         output=torch.add(output,residual)
         output=self.norm(output)
         output*=non_pad_mask

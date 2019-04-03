@@ -7,7 +7,7 @@ import torch.optim as optim
 from func import constants
 from func.utils import Word2Id,make_tensor,make_vec,make_vec_c,to_var
 import numpy as np
-from model.transformer.module import Attention,MultiHeadAttention,EncoderLayer,DecoderLayer
+from model.transformer.module import MultiHeadAttention,EncoderLayer,DecoderLayer
 
 #PADのところは0,それ以外は1
 #(batch,seq_len)
@@ -134,10 +134,8 @@ class Transformer(nn.Module):
         self.encoder=Encoder(args)
         self.decoder=Decoder(args)
 
-
     #input_words:(batch,seq_len)
     def forward(self,src,tgt,train=True,beam=False):
-
         src_output=self.encoder(src)#(batch,seq_len,hidden_size)
-        output=self.decoder(tgt,src,src_output)
+        output=self.decoder(tgt,src,src_output)#(batch,seq_len,vocab_size)
         return output
