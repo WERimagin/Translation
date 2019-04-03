@@ -56,6 +56,7 @@ class Encoder(nn.Module):
 
     #input:(batch,seq_len)
     def forward(self,input):
+        print(input[0])
         batch_size,seq_len=input.size()
 
         #self-attenのマスク
