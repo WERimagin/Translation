@@ -13,11 +13,10 @@ def Attention(key,query,value,mask):
     batch_size,seq_len,_=key.size()
 
     key=torch.transpose(key,1,2)#(batch,dim_k,seq_len)
-
     qk=torch.bmm(query,key)#(batch,seq_len,seq_len)
 
     if mask is not None:
-        mask=mask.view(1,seq_len,seq_len).repeat(batch_size,1,1)
+        #mask=mask.view(1,seq_len,seq_len).repeat(batch_size,1,1)
         qk=qk.masked_fill(mask,-np.inf)
 
     qk=torch.softmax(torch.div(qk,scaler),dim=-1)#(batch,seq_len,seq_len)
@@ -45,7 +44,7 @@ class MultiHeadAttention(nn.Module):
     #key:(batch,seq_len,dim)
     #query:(batch,seq_len,dim)
     #value:(batch,seq_len,dim)
-    #mask:(seq_len,seq_len)
+    #mask:(batch,seq_len,seq_len)
     def forward(self,key,query,value,mask=None):
         batch,k_seq_len,dim=key.size()
         _,q_seq_len,_=query.size()
@@ -60,8 +59,8 @@ class MultiHeadAttention(nn.Module):
         head_q=head_q.view(batch,q_seq_len,self.head_num,self.head_dim).transpose(1,2).contiguous().view(batch*self.head_num,q_seq_len,self.head_dim)
         head_v=head_v.view(batch,v_seq_len,self.head_num,self.head_dim).transpose(1,2).contiguous().view(batch*self.head_num,v_seq_len,self.head_dim)
 
-        #(batch*head_num,q_seq_len,head_dim)
-        output=Attention(head_k,head_q,head_v,mask)
+        mask=mask.repeat(self.head_num,1,1)#(batch*head_dim,q_seq_len,k_seq_len)
+        output=Attention(head_k,head_q,head_v,mask)#(batch*head_num,q_seq_len,head_dim)
 
         #(batch,seq_len,dim)
         output=output.view(batch,self.head_num,q_seq_len,self.head_dim).transpose(1,2).contiguous().view(batch,q_seq_len,dim)
@@ -83,18 +82,20 @@ class EncoderLayer(nn.Module):
         self.norm=nn.LayerNorm(self.hidden_size)
 
     #input:(batch,seq_len,dim)
-    def forward(self,input):
+    def forward(self,input,self_attention_mask,non_pad_mask):
         #MultiHead
         residual=input
-        output=self.self_attention(input,input,input)#(batch,seq_len,dim)
+        output=self.self_attention(input,input,input,self_attention_mask)#(batch,seq_len,dim)
         output=torch.add(output,residual)
         output=self.norm(output)
+        output*=non_pad_mask
 
         ##FF
         residual=output
         output=self.ff2(F.relu(self.ff1(output)))
         output=torch.add(output,residual)
         output=self.norm(output)
+        output*=non_pad_mask
 
         return output
 
@@ -105,27 +106,30 @@ class DecoderLayer(nn.Module):
         self.hidden_size=args.hidden_size
 
         self.self_attention=MultiHeadAttention(args)
-        self.encdec_attention=MultiHeadAttention(args)
+        self.enc_dec_attention=MultiHeadAttention(args)
         self.ff1=nn.Linear(self.hidden_size,self.hidden_size)
         self.ff2=nn.Linear(self.hidden_size,self.hidden_size)
         self.norm=nn.LayerNorm(self.hidden_size)
 
     #input:(batch,seq_len,dim)
-    def forward(self,input,encoder_output):
+    def forward(self,input,encoder_output,self_attention_mask,enc_dec_attention_mask,non_pad_mask):
 
         residual=input
-        output=self.self_attention(input,input,input)#(batch,seq_len,dim)
+        output=self.self_attention(input,input,input,self_attention_mask)#(batch,seq_len,dim)
         output=torch.add(output,residual)
         output=self.norm(output)
+        output*=non_pad_mask
 
         residual=output
-        output=self.encdec_attention(encoder_output,output,encoder_output)#(batch,seq_len,dim)
+        output=self.enc_dec_attention(encoder_output,output,encoder_output,enc_dec_attention_mask)#(batch,seq_len,dim)
         output=torch.add(output,residual)
         output=self.norm(output)
+        output*=non_pad_mask
 
         residual=output
         output=self.ff2(F.relu(self.ff1(output)))
         output=torch.add(output,residual)
         output=self.norm(output)
+        output*=non_pad_mask
 
         return output
