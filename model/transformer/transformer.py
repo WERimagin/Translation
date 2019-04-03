@@ -56,7 +56,6 @@ class Encoder(nn.Module):
 
     #input:(batch,seq_len)
     def forward(self,input):
-        print(input[0])
         batch_size,seq_len=input.size()
 
         #self-attenのマスク
@@ -65,7 +64,7 @@ class Encoder(nn.Module):
         non_pad_mask = get_non_pad_mask(input)#(batch,seq_len,1)
 
         output=self.word_embed(input)#(batch,seq_len,embed_size)
-        output=torch.add(output,position_encoder(batch_size,seq_len,self.hidden_size,self.device))
+        output=output+position_encoder(batch_size,seq_len,self.hidden_size,self.device)
 
         #6層分
         for layer in self.layers:
@@ -131,6 +130,7 @@ class Transformer(nn.Module):
         args.n_layers=6
         args.head_num=8
         args.hidden_size=512
+        args.dropout=0.1
 
         self.encoder=Encoder(args)
         self.decoder=Decoder(args)

@@ -52,6 +52,7 @@ class MultiHeadAttention(nn.Module):
 
         self.Attention=ScaledDotProductAttention(args)
         self.dropout=nn.Dropout(args.dropout)
+        self.norm=nn.LayerNorm(self.hidden_size)
 
     #key:(batch,seq_len,dim)
     #query:(batch,seq_len,dim)
@@ -61,6 +62,7 @@ class MultiHeadAttention(nn.Module):
         batch,k_seq_len,dim=key.size()
         _,q_seq_len,_=query.size()
         _,v_seq_len,_=value.size()
+        residual=query
 
         head_k=self.Wk(key)#(batch,seq_len,dim)
         head_q=self.Wq(query)#(batch,seq_len,dim)
@@ -81,7 +83,30 @@ class MultiHeadAttention(nn.Module):
         output=self.Wconcat(output)
         output=self.dropout(output)
 
+        output=self.norm(output+residual)
+
         return output
+
+class FeedForward(nn.Module):
+    def __init__(self,args):
+        super(FeedForward,self).__init__()
+
+        self.hidden_size=args.hidden_size
+
+        self.ff1=nn.Linear(self.hidden_size,self.hidden_size)
+        self.ff2=nn.Linear(self.hidden_size,self.hidden_size)
+        self.norm=nn.LayerNorm(self.hidden_size)
+        self.dropout=nn.Dropout(args.dropout)
+
+    def forward(self,input):
+        residual=input
+
+        output=self.ff2(F.relu(self.ff1(input)))
+        output=self.dropout(output)
+        output=self.norm(output+residual)
+
+        return output
+
 
 class EncoderLayer(nn.Module):
     def __init__(self,args):
@@ -94,23 +119,16 @@ class EncoderLayer(nn.Module):
         self.ff2=nn.Linear(self.hidden_size,self.hidden_size)
         self.norm=nn.LayerNorm(self.hidden_size)
         self.dropout=nn.Dropout(args.dropout)
+        self.feedforward=FeedForward(args)
 
     #input:(batch,seq_len,dim)
     def forward(self,input,self_attention_mask,non_pad_mask):
         #MultiHead
-        residual=input
         output=self.self_attention(input,input,input,self_attention_mask)#(batch,seq_len,dim)
-        output=self.dropout(output)
-        output=torch.add(output,residual)
-        output=self.norm(output)
         output*=non_pad_mask
 
         ##FF
-        residual=output
-        output=self.ff2(F.relu(self.ff1(output)))
-        output=self.dropout(output)
-        output=torch.add(output,residual)
-        output=self.norm(output)
+        output=self.feedforward(output)
         output*=non_pad_mask
 
         return output
@@ -127,29 +145,18 @@ class DecoderLayer(nn.Module):
         self.ff2=nn.Linear(self.hidden_size,self.hidden_size)
         self.norm=nn.LayerNorm(self.hidden_size)
         self.dropout=nn.Dropout(args.dropout)
+        self.feedforward=FeedForward(args)
 
     #input:(batch,seq_len,dim)
     def forward(self,input,encoder_output,self_attention_mask,enc_dec_attention_mask,non_pad_mask):
 
-        residual=input
         output=self.self_attention(input,input,input,self_attention_mask)#(batch,seq_len,dim)
-        output=self.dropout(output)
-        output=torch.add(output,residual)
-        output=self.norm(output)
         output*=non_pad_mask
 
-        residual=output
         output=self.enc_dec_attention(encoder_output,output,encoder_output,enc_dec_attention_mask)#(batch,seq_len,dim)
-        output=self.dropout(output)
-        output=torch.add(output,residual)
-        output=self.norm(output)
         output*=non_pad_mask
 
-        residual=output
-        output=self.ff2(F.relu(self.ff1(output)))
-        output=self.dropout(output)
-        output=torch.add(output,residual)
-        output=self.norm(output)
+        output=self.feedforward(output)
         output*=non_pad_mask
 
         return output
