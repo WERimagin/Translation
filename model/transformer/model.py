@@ -38,9 +38,11 @@ def get_subsequent_mask(seq,device):
 
 #(batch_size,seq_len,dim)
 def position_encoder(batch_size,seq_len,dim,device):
-    output=[[[np.sin(pos/(10000**(2*i/dim))) if i%2==0 else np.cos(pos/(10000*(2*i/dim))) for i in range(dim)] \
-                                                                                    for pos in range(seq_len)] \
-                                                                                    for _ in range(batch_size)]
+    output=[[[np.sin(pos/(10000**(i/dim))) if i%2==0 else \
+              np.cos(pos/(10000**((i-1)/dim))) \
+                        for i in range(dim)] \
+                        for pos in range(seq_len)] \
+                        for _ in range(batch_size)]
     output=torch.tensor(output,dtype=torch.float).to(device)
     return output
 
