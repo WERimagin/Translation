@@ -28,6 +28,7 @@ def get_args():
 
     #そのたのパラメーター
     parser.add_argument("--print_iter", type=int, default="100", help="input epoch number")
+    parser.add_argument("--print_example", type=int, default="0", help="input epoch number")    
     parser.add_argument("--not_train", type=bool, default=False, help="input epoch number")
     parser.add_argument("--use_train_data", type=bool, default=False, help="input epoch number")
     parser.add_argument("--model_name", type=str, default="", help="input epoch number")

@@ -24,8 +24,8 @@ from torch.autograd import Variable
 import time
 from model.seq2seq import Seq2Seq
 from model.seq2seq2 import Seq2Seq2
-#from model.transformer.Models import Transformer
-from transformer.Models import Transformer
+from model.transformer.model import Transformer
+#from transformer.Models import Transformer
 from model.seq2seq4 import Seq2Seq4
 
 from func.utils import Word2Id,BatchMaker,make_vec,make_vec_c,to_var,logger,data_loader
@@ -77,12 +77,17 @@ def model_handler(args,data,train=True,data_kind="train"):
             if i_batch%args.print_iter==0:
                 now=time.time()
                 logger(args,"epoch,{}\tbatch\t{}\tloss:{}\ttime:{}".format(epoch,i_batch,loss.data/args.train_batch_size,now-start))
-                #predict,target=predict_sentence(args,predict,output_words[:,1:],t_id2word)#(batch,seq_len)
+                predict,target=predict_sentence(args,predict,output_words[:,1:],t_id2word)#(batch,seq_len)
+                if i_batch==0 and args.print_example>0:
+                    for i in range(args.print_example):
+                        logger(args,"predict:{}".format(predict[i]))
+                        logger(args,"target:{}".format(target[i]))
+                        logger(args,"")
         else:
             predict_rate+=predict_calc(predict,output_words[:,1:])
             predict,target=predict_sentence(args,predict,output_words[:,1:],t_id2word)#(batch,seq_len)
-            if i_batch==0:
-                for i in range(3):
+            if i_batch==0 and args.print_example>0:
+                for i in range(args.print_example):
                     logger(args,"predict:{}".format(predict[i]))
                     logger(args,"target:{}".format(target[i]))
                     logger(args,"")

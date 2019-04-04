@@ -7,7 +7,7 @@ import torch.optim as optim
 from func import constants
 from func.utils import Word2Id,make_tensor,make_vec,make_vec_c,to_var
 import numpy as np
-from model.transformer.module import MultiHeadAttention,EncoderLayer,DecoderLayer
+from model.transformer.layer import EncoderLayer,DecoderLayer
 
 #PADのところは0,それ以外は1
 #(batch,seq_len)
