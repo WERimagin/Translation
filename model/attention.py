@@ -8,7 +8,7 @@ class Attention(nn.Module):
         super(Attention, self).__init__()
         self.hidden_size = args.hidden_size
 
-        self.W=nn.Linear(self.hidden_size,self.hidden_size*2)
+        self.W=nn.Linear(self.hidden_size,self.hidden_size*2,bias=True)
 
         self.attention_wight=nn.Linear(self.hidden_size,self.hidden_size*2)
 
@@ -29,6 +29,8 @@ class Attention(nn.Module):
         output=torch.bmm(output,encoder_output)#(batch,1,hidden_size*2)
         output=torch.squeeze(output,dim=1)#(batch,hidden_size*2)
         return output
+
+
 
     #scoreをconcatで計算
     #input:(batch,hidden_size)

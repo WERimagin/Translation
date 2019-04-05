@@ -196,7 +196,7 @@ class Transformer(nn.Module):
         len_max_seq=args.src_length
         d_word_vec=512#単語の次元数
         d_model=512#隠れそうの次元数
-        d_inner=2048
+        d_inner=2048#position-wise-feed-forward
         n_layers=6
         n_head=8
         d_k=64#keyの次元数

@@ -15,7 +15,6 @@ import pickle
 import json
 
 import numpy as np
-import argparse
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -25,12 +24,18 @@ from torch.autograd import Variable
 import time
 from model.seq2seq import Seq2Seq
 from model.seq2seq2 import Seq2Seq2
-from model.transformer.transformer import Transformer
+from model.transformer.model import Transformer
+#from transformer.Models import Transformer
+from model.seq2seq4 import Seq2Seq4
+
 from func.utils import Word2Id,BatchMaker,make_vec,make_vec_c,to_var,logger,data_loader
 from func.predict import loss_calc,predict_calc,predict_sentence
 from func import constants
 from func.parser import get_args
 import nltk
+import datetime
+import os
+import random
 
 
 #epochあたりの学習
