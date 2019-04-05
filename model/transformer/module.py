@@ -91,7 +91,7 @@ class FeedForward(nn.Module):
     def __init__(self,args):
         super(FeedForward,self).__init__()
 
-        self.hidden_size=self.hidden_size
+        self.hidden_size=args.hidden_size
         self.second_hidden_size=2048
 
         self.ff1=nn.Linear(self.hidden_size,self.second_hidden_size)
